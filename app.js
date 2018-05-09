@@ -112,7 +112,7 @@ app.use(async (ctx,next)=>{
     await next();
 })
 
-console.log(router)
+//console.log(router)
 app.use(router)
 //app.use(bloglist)
 

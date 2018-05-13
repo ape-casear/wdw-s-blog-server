@@ -24,21 +24,30 @@
 
 {{else}}
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     <ul>
         <li>
-            <label for="username">E-mail</label>
-            <input name="username" id="username" type="email" value="{{@koa.flash.formdata.username}}" required autofocus>
+            <label for="title">title</label>
+            <input name="title" id="title" type="text" value="{{@koa.flash.formdata.username}}" required autofocus>
         </li>
         <li>
-            <label for="password">Password</label>
-            <input name="password" id="password" type="password" required>
+            <label for="author">author</label>
+            <input name="author" id="author" type="text" required>
+        </li>
+        <li>
+            <label for="tag">tag</label>
+            <input name="tag" id="tag" type="text" required>
+        </li>
+        <li>
+            <label for="blog">blog</label>
+            <input name="blog" id="blog" type="file" required>
         </li>
         <li>
             <label></label>
-            <input type="checkbox" name="remember-me" id="remember-me">
+            <input type="remember-me" name="remember-me" id="remember-me">
             <label for="remember-me" title="for up to 7 days inactivity" class="grey">remember me</label>
         </li>
+
         <li>
             <label></label>
             <button type="submit" class="fa fa-check-square-o green" title="Login"></button>

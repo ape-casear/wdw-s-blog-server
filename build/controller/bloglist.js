@@ -7,33 +7,46 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const mysql_1 = __importDefault(require("mysql"));
+const mysqlutil_1 = __importDefault(require("../model/mysqlutil"));
 class BlogList {
-    static getBlogList(page_num, page_size) {
+    static getBlogList(page_num, page_size, sort_type, tag) {
         return __awaiter(this, void 0, void 0, function* () {
-            let results = yield Promise.all([new Promise(res => {
-                    let sql = `select * from bloglist limit ${page_num * page_size},${page_size}`;
-                    global.connectionPool.query(sql, (err, result) => {
-                        if (err)
-                            throw err;
-                        res(result);
-                    });
-                }), new Promise(res => {
-                    let sql = `select count(1) as total_page from bloglist`;
-                    global.connectionPool.query(sql, (err, result) => {
-                        if (err)
-                            throw err;
-                        res(result[0]);
-                    });
-                })]);
-            console.log(results);
-            let datas = results[0];
-            for (let key in datas) {
-                console.log(`key:${key},value:${datas[key]}`);
+            let sort = ' order by `pub_datetime` desc ';
+            let tagcondition = '';
+            if (tag) {
+                tagcondition += ' where tag=' + mysqlutil_1.default.escape(tag);
             }
-            let total_pate = results[1];
-            console.log((typeof total_pate));
-            return { datas, total_pate };
+            if (sort_type) {
+                if (sort_type === 'like') {
+                    sort = ' order by `like` desc ';
+                }
+                else if (sort_type === 'browse_count') {
+                    sort = ' order by `browse_count` desc ';
+                }
+            }
+            let sql1 = `select * from bloglist ${tagcondition} ${sort} limit ${page_num * page_size},${page_size}`;
+            let bloglist = (yield global.asynConPool.queryAsync(sql1));
+            let sql2 = `select count(1) as total_page from bloglist`;
+            let total_page = yield mysqlutil_1.default.query(sql2);
+            return { bloglist, total_page };
+        });
+    }
+    static getbloginfo(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let sql = 'select * from bloglist where id=' + mysql_1.default.escape(id);
+            return yield mysqlutil_1.default.queryOne(sql);
+        });
+    }
+    static insertbloginfo(bloglist) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let sql = `insert into bloglist(title,author,tag) values(${mysql_1.default.escape(bloglist.title)},
+        ${mysql_1.default.escape(bloglist.author)},${mysql_1.default.escape(bloglist.tag)})`;
+            return yield global.asynConnection.queryAsync(sql);
         });
     }
 }

@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const koa_router_1 = __importDefault(require("koa-router"));
-const bloglist_1 = __importDefault(require("../controller/bloglist"));
-const router = new koa_router_1.default();
-router.get('/bloglist/:page_num/', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-    let { page_num, page_size } = ctx.params;
-    let { tag, sort_type } = ctx.request.query;
-    let result = yield bloglist_1.default.getBlogList(page_num, page_size || 10, sort_type, tag);
-    ctx.body = result;
-}));
-module.exports = router.middleware();
+const bluebird_1 = __importDefault(require("bluebird"));
+function init() {
+    return __awaiter(this, void 0, void 0, function* () {
+        global.asynConPool = bluebird_1.default.promisifyAll(global.connectionPool);
+        const connection = yield global.asynConPool.getConnectionAsync();
+        global.asynConnection = bluebird_1.default.promisifyAll(connection);
+        console.log('mysql async done!');
+    });
+}
+module.exports = init;

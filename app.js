@@ -11,12 +11,13 @@ const koaRoute = require('koa-router');     // router middleware for koa
 //const router = koaRouter();
 const router = require('./build/router/router.js');
 const bloglist = require('./build/router/bloglist.js');
+const init = require('./build/lib/mysqlAsync');
 
 const mysql =require('mysql');
 
 const HandlebarsHelpers = require('./lib/handlebars-helpers.js');
 
-
+process.env.debug = 1;
 
 require('dotenv').config(); // loads environment variables from .env file (if available - eg dev env)
 const Log = require('./lib/log.js');
@@ -78,6 +79,7 @@ app.use(async function handleErrors(ctx, next) {
 app.use(async function cleanPost(ctx, next) {
     if (ctx.request.body !== undefined) {
         // koa-body puts multipart/form-data form fields in request.body.{fields,files}
+     
         const multipart = 'fields' in ctx.request.body && 'files' in ctx.request.body;
         const body =  multipart ? ctx.request.body.fields : ctx.request.body;
         for (const key in body) {
@@ -113,6 +115,7 @@ app.use(async (ctx,next)=>{
 })
 
 //console.log(router)
+
 app.use(router)
 //app.use(bloglist)
 
@@ -126,7 +129,8 @@ app.use(router)
 //mysql pool
 const dbConfigKeyVal = process.env.DB_CONNECTION.split(';').map(v => v.trim().split('='));
 const dbConfig = dbConfigKeyVal.reduce((config, v) => { config[v[0].toLowerCase()] = v[1]; return config; }, {});
-global.connectionPool = mysql.createPool(dbConfig); 
+global.connectionPool =  mysql.createPool(dbConfig); 
+init();
 
 // end of the line: 404 status for any resource not found
 app.use(function notFound(ctx) { // note no 'next'

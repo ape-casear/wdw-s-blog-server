@@ -12,11 +12,20 @@ export interface BlogList{
     pub_date: string;
     like: number;
     browse_count: number;
+    tag: string;
 }
-
+//{id:1, user: '独孤求败', comment: '丢你老谋', comment_datatime: '2018-05-09 12:32:11', floor: 1, sub_comment: 
+export interface Comment{
+    id: number;
+    bloglistid: number;
+    author: string;
+    comment: string;
+    comment_datatime: string;
+    parent: number;
+}
 export interface User{
     uid: number;
-    name: string;
+    author: string;
     telephone: number;
     describe: string;
     head_img: string;

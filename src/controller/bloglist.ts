@@ -21,6 +21,7 @@ class BlogList{
         let sql1 = `select * from bloglist ${tagcondition} ${sort} limit ${page_num*page_size},${page_size}`;
         let bloglist = (await global.asynConPool.queryAsync(sql1)) as Array<model.BlogList>;
         let sql2 = `select count(1) as total_page from bloglist`;
+        if(process.env.debug){console.log(sql1+';'+sql2)}
         let total_page = await  mysqlutil.query(sql2)
 
       
@@ -31,12 +32,14 @@ class BlogList{
 
     static async getbloginfo(id: number){
         let sql = 'select * from bloglist where id='+mysql.escape(id);
+        if(process.env.debug){console.log(sql)}
         return await mysqlutil.queryOne(sql);
     }
 
     static async insertbloginfo(bloglist: any){
         let sql = `insert into bloglist(title,author,tag) values(${mysql.escape(bloglist.title)},
         ${mysql.escape(bloglist.author)},${mysql.escape(bloglist.tag)})`;
+        if(process.env.debug){console.log(sql)}
 
         return await global.asynConnection.queryAsync(sql);
     }

@@ -3,24 +3,30 @@ import * as model from '../model/model';
 import mysqlutil from '../model/mysqlutil';
 
 class WebInfo{
-    static async update_visit_count(){
-        let sql = 'update webinfo set visit_count = visit_count+20 ';
-        let result = await mysqlutil.query(sql);
+    static async update_count(type: string){
+        let web_info_client = await global.mongoDb.collection('web_info');
+
+        let web_info_data = await web_info_client.findOne({"name":"web_info"});
+        console.log(web_info_data)
+        if(type === 'visit'){
+            web_info_data.visit_count += 1;
+        }else if(type === 'comment'){
+            web_info_data.total_comment += 1;
+        }else if(type === 'blog'){
+            web_info_data.blog_count += 1;
+        }
+        let result = await web_info_client.update({"name":"web_info"},{"name":"web_info","visit_count":web_info_data.visit_count,
+        "total_comment":web_info_data.total_comment, "blog_count": web_info_data.blog_count});
         return result;
 
     }
-    static async get_visit_count(){
-        let sql = 'select visit_count from  webinfo';
-        let result = await mysqlutil.queryOne(sql);
-        return result as Array<model.WebInfo>;
+    static async get_count(){
+        let web_info_client = await global.mongoDb.collection('web_info');
 
+        let web_info_data = await web_info_client.findOne({"name":"web_info"});
+        return web_info_data;
     }
-    static async get_total_comment(){
-        let sql = 'select count(1) as total_comment  from comment';
-        let result = await mysqlutil.queryOne(sql);
-        return result as Array<model.WebInfo>;
-    }
-    
+
 }
 
 export = WebInfo;

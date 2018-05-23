@@ -7,29 +7,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-const mysqlutil_1 = __importDefault(require("../model/mysqlutil"));
 class WebInfo {
-    static update_visit_count() {
+    static update_count(type) {
         return __awaiter(this, void 0, void 0, function* () {
-            let sql = 'update webinfo set visit_count = visit_count+20 ';
-            let result = yield mysqlutil_1.default.query(sql);
+            let web_info_client = yield global.mongoDb.collection(web_info);
+            let web_info_data = yield web_info.findOne({ "name": "web_info" });
+            console.log(web_info_data);
+            if (type === 'visit') {
+                web_info_data.visit_count += 1;
+            }
+            else if (type === 'comment') {
+                web_info_data.total_comment += 1;
+            }
+            else if (type === 'blog') {
+                web_info_data.blog_count += 1;
+            }
+            let result = yield web_info.update({ "nameid": "web_info" }, { "name": "web_info", "visit_count": web_info_data.visit_count,
+                "total_comment": web_info_data.total_comment, "blog_count": web_info_data.blog_count });
             return result;
         });
     }
-    static get_visit_count() {
+    static get_count() {
         return __awaiter(this, void 0, void 0, function* () {
-            let sql = 'select visit_count from  webinfo';
-            let result = yield mysqlutil_1.default.queryOne(sql);
-            return result;
+            let web_info_client = yield global.mongoDb.collection(web_info);
+            let web_info_data = yield web_info.findOne({ "name": "web_info" });
+            return web_info_data;
         });
     }
     static get_total_comment() {
         return __awaiter(this, void 0, void 0, function* () {
-            let sql = 'select count(1) as total_comment  from comment';
-            let result = yield mysqlutil_1.default.queryOne(sql);
             return result;
         });
     }

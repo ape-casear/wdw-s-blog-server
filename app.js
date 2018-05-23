@@ -8,6 +8,9 @@ const flash      = require('koa-flash');      // flash messages
 const serve      = require('koa-static');     // static file serving middleware
 const debug    = require('debug')('app');   // small debugging utility
 const koaRoute = require('koa-router');     // router middleware for koa
+const MongoClient = require('mongodb').MongoClient;
+const cors = require('@koa/cors');           //for XHR request
+
 //const router = koaRouter();
 const router = require('./build/router/router.js');
 const bloglist = require('./build/router/bloglist.js');
@@ -24,7 +27,16 @@ const Log = require('./lib/log.js');
 
 const app = new Koa();
 
-
+app.use(cors({
+    origin :function(ctx){
+        let ip = ctx.request.ip;
+        if(ip =='::1'){
+            return '*';
+        }else{
+            return null;
+        }
+    }
+}));
 app.use(serve('public'));
 app.use(async function responseTime(ctx, next) {
     const t1 = Date.now();
@@ -79,9 +91,12 @@ app.use(async function handleErrors(ctx, next) {
 app.use(async function cleanPost(ctx, next) {
     if (ctx.request.body !== undefined) {
         // koa-body puts multipart/form-data form fields in request.body.{fields,files}
-     
+        if(ctx.request.body.files){
+            console.log(ctx.request.body.files)
+        }
         const multipart = 'fields' in ctx.request.body && 'files' in ctx.request.body;
         const body =  multipart ? ctx.request.body.fields : ctx.request.body;
+        
         for (const key in body) {
             if (typeof body[key] == 'string') {
                 body[key] = body[key].trim();
@@ -137,8 +152,28 @@ app.use(function notFound(ctx) { // note no 'next'
     ctx.throw(404);
 });
 
-app.listen(8080,()=>{
-    console.log('app run at localhost:8080')
+app.on('mongodbReady',()=>{
+    app.listen(8080,()=>{
+        console.log('app run at localhost:8080')
+    })
 })
+
+MongoClient.connect(process.env.DB_MONGO)
+    .then(client => {
+        console.log(client.s)
+        global.mongoDb = client.db(client.s.options.dbName);
+        // if empty db, create capped collections for logs (if not createCollection() calls do nothing)
+        global.mongoDb.createCollection('web_info', { capped: true, size: 100*1e3, max: 100 });
+     
+    })
+    .then(() => {
+        app.emit('mongodbReady');
+    })
+    .catch(err => {
+        console.error(`Mongo connection error: ${err.message}`);
+        process.exit(1);
+    });
+
+
 
 module.exports = app;

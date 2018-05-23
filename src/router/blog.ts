@@ -1,6 +1,7 @@
 import koaRouter from 'koa-router';
 import blogController from '../controller/blog';
 import bloglistController from '../controller/bloglist';
+import webinfoController from '../controller/webinfo';
 import * as model from '../model/model';
 import fs from 'fs';
 
@@ -14,30 +15,25 @@ router.get('/blog/:id',async(ctx)=>{
 })
 
 router.post('/fortest', async(ctx)=>{
+    
+    let { blog } = ctx.request.body.files;
+    let { title, author, type } = ctx.request.body.fields;
+    let data = fs.readFileSync(ctx.request.body.files.blog.path)
+    webinfoController.update_count('blog');
+    
+    console.log(data.toString())
     try{
-        console.log( ctx.request.body)
-        let { blog } = ctx.request.body.files;
-        let { title, author, tag } = ctx.request.body.fields;
-        let data = fs.readFileSync(ctx.request.body.files.blog.path)
+        await global.asynConnection.beginTransactionAsync();
+        let result2 = await bloglistController.insertbloginfo({ title, author, type });
+        console.log(result2)
+        
+        let result1 = await blogController.insertBlog({id: 0, bloglistid: result2.insertId, blog: data.toString()});
+        await global.asynConnection.commitAsync();
+        ctx.body = {code:0, msg:[result2, result1]};
 
-        console.log(data.toString())
-        try{
-            await global.asynConnection.beginTransactionAsync();
-            let result2 = await bloglistController.insertbloginfo({ title, author, tag });
-            console.log(result2)
-           
-            let result1 = await blogController.insertBlog({id: 0, bloglistid: result2.insertId, blog: data.toString()});
-            await global.asynConnection.commitAsync();
-            ctx.body = {code:0, result2, result1};
-
-            return;
-        }catch(e){
-            await global.asynConnection.rollbackAsync();
-            throw e;
-        }
-        ctx.body = {code: 100, msg: 'insert failed'}
     }catch(e){
-       
+        await global.asynConnection.rollbackAsync();
+        ctx.body = {code: 100, msg: 'insert failed'}
         throw e;
     }
 })

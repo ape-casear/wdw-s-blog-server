@@ -16,7 +16,7 @@ function init() {
         global.asynConPool = bluebird_1.default.promisifyAll(global.connectionPool);
         const connection = yield global.asynConPool.getConnectionAsync();
         global.asynConnection = bluebird_1.default.promisifyAll(connection);
-        console.log('mysql async done!');
+        console.log('[mysql] mysql async done!');
     });
 }
 module.exports = init;

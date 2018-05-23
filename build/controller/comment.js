@@ -15,7 +15,7 @@ const mysqlutil_1 = __importDefault(require("../model/mysqlutil"));
 class Comment {
     static getComment(bloglistid) {
         return __awaiter(this, void 0, void 0, function* () {
-            let sql = `select * from comment where bloglistid=${mysqlutil_1.default.escape(bloglistid)}`;
+            let sql = `select * from comments where bloglistid=${mysqlutil_1.default.escape(bloglistid)}`;
             if (process.env.debug) {
                 console.log(sql);
             }

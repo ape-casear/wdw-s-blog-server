@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const koa_router_1 = __importDefault(require("koa-router"));
 const comment_1 = __importDefault(require("../controller/comment"));
+const webinfo_1 = __importDefault(require("../controller/webinfo"));
 const router = new koa_router_1.default();
 router.get('/comment/:bloglistid', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let { bloglistid } = ctx.params;
@@ -20,6 +20,7 @@ router.get('/comment/:bloglistid', (ctx) => __awaiter(this, void 0, void 0, func
 }));
 router.post('/comment/addcomment', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let { bloglistid, author, comment, parent } = ctx.request.body;
+    webinfo_1.default.update_count('comment');
     ctx.body = yield comment_1.default.addComment({ id: 0, bloglistid, author, comment, parent, comment_datatime: '' });
 }));
-exports.default = router.middleware();
+module.exports = router.middleware();

@@ -13,21 +13,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const koa_router_1 = __importDefault(require("koa-router"));
 const bloglist_1 = __importDefault(require("./bloglist"));
 const blog_1 = __importDefault(require("./blog"));
-const mysqlutil_1 = __importDefault(require("../model/mysqlutil"));
+const comment_1 = __importDefault(require("./comment"));
+const user_1 = __importDefault(require("./user"));
+const fileUpload_1 = __importDefault(require("../lib/fileUpload"));
+//////////scrape and img///////////////
+const btc_1 = __importDefault(require("../scrape_img_router/btc"));
+const graphics_card_1 = __importDefault(require("../scrape_img_router/graphics_card"));
 const router = new koa_router_1.default();
 router.get('/fortest', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-    let con = yield mysqlutil_1.default.getConnection();
-    console.log(con);
     yield ctx.render('login');
 }));
-/* router.post('/fortest',async (ctx,next)=>{
-     console.log(ctx.request.body)
-     ctx.body = {msg:'ok',data: ctx.request.body};
-}) */
+router.post('/fortest', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
+    let { imgs } = ctx.request.body.files;
+    let imgPair = [];
+    for (let img of imgs) {
+        let newpath = yield fileUpload_1.default.imgUpload(img);
+        imgPair.push({ name: img.name, newpath });
+    }
+    ctx.body = { msg: 'ok', data: imgPair };
+}));
 router.get('/', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
     ctx.type = 'json';
     ctx.body = { code: 1, msg: 'hello koa' };
 }));
 router.use(bloglist_1.default);
 router.use(blog_1.default);
+router.use(comment_1.default);
+router.use(user_1.default);
+router.use(btc_1.default);
+router.use(graphics_card_1.default);
 module.exports = router.middleware();

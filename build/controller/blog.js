@@ -24,9 +24,11 @@ class Blog {
     static insertBlog(blog) {
         return __awaiter(this, void 0, void 0, function* () {
             let sql = `insert into blog(bloglistid,blog) values(${mysql_1.default.escape(blog.bloglistid)},
-        ${mysql_1.default.escape(blog.blog)})`;
-            let result = yield global.asynConnection.queryAsync(sql);
-            return result;
+            ${mysql_1.default.escape(blog.blog)})`;
+            if (process.env.debug) {
+                console.log(sql);
+            }
+            return yield global.asynConnection.queryAsync(sql);
         });
     }
 }

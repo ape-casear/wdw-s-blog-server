@@ -22,6 +22,24 @@ class User {
             return yield global.asynConPool.queryAsync(sql);
         });
     }
+    static getUserByName(author) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let sql = `select * from user where author = ${mysqlutil_1.default.escape(author)}`;
+            if (process.env.debug) {
+                console.log(sql);
+            }
+            return yield global.asynConPool.queryAsync(sql);
+        });
+    }
+    static login(name, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let sql = `select * from user where author=${mysqlutil_1.default.escape(name)} and password=${mysqlutil_1.default.escape(password)}`;
+            if (process.env.debug) {
+                console.log(sql);
+            }
+            return yield global.asynConPool.queryAsync(sql);
+        });
+    }
     static putUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
             let sql = `insert into user(author,password,telephone) values(${user.author},${user.password},${user.telephone})`;

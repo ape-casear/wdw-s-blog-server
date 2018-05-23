@@ -4,10 +4,12 @@ import blog from './blog';
 import comment from './comment';
 import user from './user';
 import fileUpload from '../lib/fileUpload';
+import web_info from './web_info';
 //////////scrape and img///////////////
 import btc from '../scrape_img_router/btc';
 import graphics_card from '../scrape_img_router/graphics_card';
 import img from '../scrape_img_router/img';
+import zhihu_img from './zhihu_img';
 
 
 
@@ -39,6 +41,7 @@ router.use(user)
 router.use(btc)
 router.use(graphics_card)
 router.use(img);
+router.use(zhihu_img);
 
 
 export = router.middleware();

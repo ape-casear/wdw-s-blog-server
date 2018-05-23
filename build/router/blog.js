@@ -25,17 +25,17 @@ router.get('/blog/:id', (ctx) => __awaiter(this, void 0, void 0, function* () {
 }));
 router.post('/fortest', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let { blog } = ctx.request.body.files;
-    let { title, author, tag } = ctx.request.body.fields;
+    let { title, author, type } = ctx.request.body.fields;
     let data = fs_1.default.readFileSync(ctx.request.body.files.blog.path);
     webinfo_1.default.update_count('blog');
     console.log(data.toString());
     try {
         yield global.asynConnection.beginTransactionAsync();
-        let result2 = yield bloglist_1.default.insertbloginfo({ title, author, tag });
+        let result2 = yield bloglist_1.default.insertbloginfo({ title, author, type });
         console.log(result2);
         let result1 = yield blog_1.default.insertBlog({ id: 0, bloglistid: result2.insertId, blog: data.toString() });
         yield global.asynConnection.commitAsync();
-        ctx.body = { code: 0, result2, result1 };
+        ctx.body = { code: 0, msg: [result2, result1] };
     }
     catch (e) {
         yield global.asynConnection.rollbackAsync();

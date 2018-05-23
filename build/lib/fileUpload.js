@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const moment_1 = __importDefault(require("moment"));
 exports.default = {
     imgUpload(file) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -20,10 +21,11 @@ exports.default = {
             // console.log(ctx.request.body.files)
             const read = fs_1.default.createReadStream(file.path);
             const write = fs_1.default.createWriteStream(newpath);
+            const date = moment_1.default().format('yyyy-MM-dd');
             const pub = new Promise((resolve, reject) => {
                 var stream = read.pipe(write);
                 stream.on('finish', function () {
-                    resolve(`${process.env.host}:${process.env.port}/public/img/${file.name}`);
+                    resolve(`${process.env.HOST}:${process.env.PORT}/public/img/${date}_${file.name}`);
                 });
             });
             return yield pub;

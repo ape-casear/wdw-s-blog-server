@@ -16,7 +16,8 @@ const webinfo_1 = __importDefault(require("../controller/webinfo"));
 const router = new koa_router_1.default();
 router.get('/comment/:bloglistid', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let { bloglistid } = ctx.params;
-    ctx.body = yield comment_1.default.getComment(bloglistid);
+    let result = yield comment_1.default.getComment(bloglistid);
+    ctx.body = { code: 0, data: result };
 }));
 router.post('/comment/addcomment', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let { bloglistid, author, comment, parent } = ctx.request.body;

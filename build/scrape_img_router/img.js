@@ -12,11 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const koa_router_1 = __importDefault(require("koa-router"));
+const fileUpload_1 = __importDefault(require("../lib/fileUpload"));
 const router = new koa_router_1.default();
 router.put('/img', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let { imgs } = ctx.request.body.files;
+    let imgPair = [];
     for (let img of imgs) {
-        img.write("../../public/img");
+        let newpath = yield fileUpload_1.default.imgUpload(img);
+        imgPair.push({ name: img.name, newpath });
     }
-    ctx.body = { wdw: 123 };
+    ctx.body = { msg: 'ok', data: imgPair };
 }));
+exports.default = router.middleware();

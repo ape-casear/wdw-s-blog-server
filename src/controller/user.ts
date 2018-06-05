@@ -19,7 +19,8 @@ class User{
 
     }
     static async putUser(user: model.User){
-        let sql = `insert into user(author,password,telephone) values(${user.author},${user.password},${user.telephone})`;
+        let sql = `insert into user(author,password,telephone) values(
+            ${mysqlutil.escape(user.author)},${mysqlutil.escape(user.password)},${user.telephone})`;
         if(process.env.debug){console.log(sql)}
 
         return await  global.asynConPool.queryAsync(sql);

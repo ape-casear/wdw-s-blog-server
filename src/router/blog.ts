@@ -14,12 +14,19 @@ router.get('/blog/:id',async(ctx)=>{
     ctx.body = {code:0, msg:'ok', data:{content:result_content, info: result_info}};
 })
 
-router.post('/fortest', async(ctx)=>{
+router.get('/blog', async(ctx)=>{
+    let { bloglistid } = ctx.query;
+    let result = await blogController.getBlogByListId( bloglistid );
+    bloglistController.addCount( bloglistid );
+    ctx.body = { code:0, data: result[0]};
+})
+
+router.post('/blog', async(ctx)=>{
     
     let { blog } = ctx.request.body.files;
     let { title, author, type } = ctx.request.body.fields;
     let data = fs.readFileSync(ctx.request.body.files.blog.path)
-    webinfoController.update_count('blog');
+    
     
     console.log(data.toString())
     try{
@@ -29,6 +36,7 @@ router.post('/fortest', async(ctx)=>{
         
         let result1 = await blogController.insertBlog({id: 0, bloglistid: result2.insertId, blog: data.toString()});
         await global.asynConnection.commitAsync();
+        webinfoController.update_count('blog');
         ctx.body = {code:0, msg:[result2, result1]};
 
     }catch(e){

@@ -2,12 +2,16 @@ import koaRouter from 'koa-router';
 import commentController from '../controller/comment';
 import webinfoController from '../controller/webinfo';
 import * as model from '../model/model';
+import moment from 'moment';
 
 const router = new koaRouter();
 
 router.get('/comment/:bloglistid',async (ctx)=>{
     let { bloglistid } = ctx.params;
     let result = await commentController.getComment(bloglistid);
+    result.map( (data: model.Comment) =>{
+        data.comment_datetime = moment(data.comment_datetime).format('YYYY-MM-DD HH:mm:ss')
+    })
     ctx.body = {code:0, data: result}
 })
 

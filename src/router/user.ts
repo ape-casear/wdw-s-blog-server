@@ -18,16 +18,18 @@ router.post('/user/login', async(ctx)=>{
     password = hash.update(password+'wdwblog').digest('hex');
 
     let result = await userController.login(author, password);
-    if(result instanceof Array && result[0].id){
+    if(result instanceof Array && result[0] && result[0].id){
         result[0].password = '';
         result[0].telephone = '';
-        return {code:0, data: result[0]};
+        ctx.body =  {code:0, data: result[0]};
+        return;
     }
 
-    return {code:500,msg:'账号或密码错误'}
+    ctx.body =  {code:500,msg:'账号或密码错误'}
 })
 router.post('/user',async (ctx)=>{
     let { author, password, telephone} = ctx.request.body;
+    console.log({ author, password, telephone})
     let user = await userController.getUserByName(author);
     if(user[0] && user[0].id){
         ctx.body = {code:400, msg:'用户名已存在'}
@@ -39,7 +41,16 @@ router.post('/user',async (ctx)=>{
     let result = await userController.putUser({id:0, author, password, telephone, create_time:'', snake_score:0, mine_score:0});
     ctx.body = {code:0, msg:result}
 })
+router.get('/user/checkname/:author', async(ctx)=>{
+    let { author } = ctx.params;
+    let user = await userController.getUserByName(author);
+    if(user[0] && user[0].id){
+        ctx.body = {code:400, msg:'用户名已存在'}
+    }else{
+        ctx.body = { code:0, msg: 'ok' }
+    }
 
+})
 router.post('/user/update', async (ctx)=>{
     let { snake_score, mine_score, id} = ctx.request.body;
     let address = ctx.request.ip;

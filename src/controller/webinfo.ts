@@ -8,8 +8,10 @@ class WebInfo{
 
         let web_info_data = await web_info_client.findOne({"name":"web_info"});
         console.log(web_info_data)
+        console.log(typeof web_info_data.visit_count)
         if(type === 'visit'){
             web_info_data.visit_count += 1;
+            console.log(web_info_data.visit_count)
         }else if(type === 'comment'){
             web_info_data.total_comment += 1;
         }else if(type === 'blog'){

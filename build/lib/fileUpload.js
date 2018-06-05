@@ -13,17 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const moment_1 = __importDefault(require("moment"));
 exports.default = {
     imgUpload(file) {
         return __awaiter(this, void 0, void 0, function* () {
-            let newpath = path_1.default.join(__dirname, '../../public/img/' + file.name);
             // console.log(ctx.request.body.files)
+            const date = moment_1.default().format('YYYY-MM-DD');
+            let newpath = path_1.default.join(__dirname, '../../public/img/' + date + '_' + file.name);
             const read = fs_1.default.createReadStream(file.path);
             const write = fs_1.default.createWriteStream(newpath);
             const pub = new Promise((resolve, reject) => {
                 var stream = read.pipe(write);
                 stream.on('finish', function () {
-                    resolve(`${process.env.host}:${process.env.port}/public/img/${file.name}`);
+                    resolve(`http://www.weidongwei.com:${process.env.PORT}/public/img/${date}_${file.name}`);
                 });
             });
             return yield pub;

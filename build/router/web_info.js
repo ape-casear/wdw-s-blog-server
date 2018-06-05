@@ -18,3 +18,4 @@ router.get('/webinfo', (ctx) => __awaiter(this, void 0, void 0, function* () {
     webinfo_1.default.update_count('visit');
     ctx.body = yield webinfo_1.default.get_count();
 }));
+exports.default = router.middleware();

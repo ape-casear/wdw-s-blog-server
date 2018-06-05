@@ -27,6 +27,9 @@ class Comment {
             comment = mysqlutil_1.default.escapeAll(comment);
             let sql = `insert into comments(bloglistid,author,comment,parent)
              values(${comment.bloglistid},${comment.author},${comment.comment},${comment.parent})`;
+            if (process.env.debug) {
+                console.log(sql);
+            }
             return yield global.asynConPool.queryAsync(sql);
         });
     }

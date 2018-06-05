@@ -13,9 +13,17 @@ class Blog{
     static async insertBlog(blog: model.Blog){
         let sql = `insert into blog(bloglistid,blog) values(${mysql.escape(blog.bloglistid)},
             ${mysql.escape(blog.blog)})`;
-            if(process.env.debug){console.log(sql)}
-        return await global.asynConnection.queryAsync(sql);
+        if(process.env.debug){console.log(sql)}
+        return await global.asynConnection.queryAsync(sql)
        
     }
+
+    static async getBlogByListId( bloglistid: number){
+        let sql = `select * from blog where bloglistid=${mysql.escape(bloglistid)}`;
+        if(process.env.debug){console.log(sql)}
+        return await global.asynConPool.queryAsync(sql)
+
+    }
+
 }
 export default Blog;

@@ -30,12 +30,12 @@ const app = new Koa();
 app.use(cors({
     origin :function(ctx){
         let ip = ctx.request.ip;
-        if(ip =='::1'){
-            return '*';
-        }else{
-            return null;
-        }
-    }
+        console.log(ip)
+        return '*';
+    },
+    allowHeaders: ["Authorization","Origin", "X-Requested-With", "Content-Type", "Accept", "Referer", "User-Agent"],
+    credentials: true,
+    keepHeadersOnError: true
 }));
 app.use(serve('public'));
 app.use(async function responseTime(ctx, next) {
@@ -153,8 +153,8 @@ app.use(function notFound(ctx) { // note no 'next'
 });
 
 app.on('mongodbReady',()=>{
-    app.listen(8080,()=>{
-        console.log('app run at localhost:8080')
+    app.listen(process.env.PORT,()=>{
+        console.log('app run at localhost:'+process.env.PORT)
     })
 })
 
@@ -163,7 +163,7 @@ MongoClient.connect(process.env.DB_MONGO)
         console.log(client.s)
         global.mongoDb = client.db(client.s.options.dbName);
         // if empty db, create capped collections for logs (if not createCollection() calls do nothing)
-        global.mongoDb.createCollection('web_info', { capped: true, size: 100*1e3, max: 100 });
+        global.mongoDb.createCollection('web_info');
      
     })
     .then(() => {

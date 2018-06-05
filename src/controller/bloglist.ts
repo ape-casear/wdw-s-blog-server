@@ -41,7 +41,19 @@ class BlogList{
         ${mysql.escape(bloglist.author)},${mysql.escape(bloglist.tag)})`;
         if(process.env.debug){console.log(sql)}
 
-        return await global.asynConnection.queryAsync(sql);
+        return await global.asynConnection.queryAsync(sql)
+    }
+
+    static async addCount(bloglist: number, type?: string){
+        let add_type = 'browse_count'
+        if(type == 'browse_count'){
+
+        }else if(type == 'like'){
+            add_type = 'like';
+        }
+        let sql = `update bloglist set ${add_type} = ${add_type}+1 where id=${mysqlutil.escape(bloglist)}`;
+        if(process.env.debug){console.log(sql)}
+        return await global.asynConPool.queryAsync(sql)
     }
 }
 

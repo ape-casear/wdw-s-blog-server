@@ -23,19 +23,25 @@ router.get('/blog/:id', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let result_info = yield bloglist_1.default.getbloginfo(id);
     ctx.body = { code: 0, msg: 'ok', data: { content: result_content, info: result_info } };
 }));
-router.post('/fortest', (ctx) => __awaiter(this, void 0, void 0, function* () {
+router.get('/blog', (ctx) => __awaiter(this, void 0, void 0, function* () {
+    let { bloglistid } = ctx.query;
+    let result = yield blog_1.default.getBlogByListId(bloglistid);
+    bloglist_1.default.addCount(bloglistid);
+    ctx.body = { code: 0, data: result[0] };
+}));
+router.post('/blog', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let { blog } = ctx.request.body.files;
-    let { title, author, tag } = ctx.request.body.fields;
+    let { title, author, type } = ctx.request.body.fields;
     let data = fs_1.default.readFileSync(ctx.request.body.files.blog.path);
-    webinfo_1.default.update_count('blog');
     console.log(data.toString());
     try {
         yield global.asynConnection.beginTransactionAsync();
-        let result2 = yield bloglist_1.default.insertbloginfo({ title, author, tag });
+        let result2 = yield bloglist_1.default.insertbloginfo({ title, author, type });
         console.log(result2);
         let result1 = yield blog_1.default.insertBlog({ id: 0, bloglistid: result2.insertId, blog: data.toString() });
         yield global.asynConnection.commitAsync();
-        ctx.body = { code: 0, result2, result1 };
+        webinfo_1.default.update_count('blog');
+        ctx.body = { code: 0, msg: [result2, result1] };
     }
     catch (e) {
         yield global.asynConnection.rollbackAsync();

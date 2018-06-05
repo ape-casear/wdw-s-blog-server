@@ -32,6 +32,9 @@ class BlogList {
             let sql1 = `select * from bloglist ${tagcondition} ${sort} limit ${page_num * page_size},${page_size}`;
             let bloglist = (yield global.asynConPool.queryAsync(sql1));
             let sql2 = `select count(1) as total_page from bloglist`;
+            if (process.env.debug) {
+                console.log(sql1 + ';' + sql2);
+            }
             let total_page = yield mysqlutil_1.default.query(sql2);
             return { bloglist, total_page };
         });
@@ -39,6 +42,9 @@ class BlogList {
     static getbloginfo(id) {
         return __awaiter(this, void 0, void 0, function* () {
             let sql = 'select * from bloglist where id=' + mysql_1.default.escape(id);
+            if (process.env.debug) {
+                console.log(sql);
+            }
             return yield mysqlutil_1.default.queryOne(sql);
         });
     }
@@ -46,7 +52,25 @@ class BlogList {
         return __awaiter(this, void 0, void 0, function* () {
             let sql = `insert into bloglist(title,author,tag) values(${mysql_1.default.escape(bloglist.title)},
         ${mysql_1.default.escape(bloglist.author)},${mysql_1.default.escape(bloglist.tag)})`;
+            if (process.env.debug) {
+                console.log(sql);
+            }
             return yield global.asynConnection.queryAsync(sql);
+        });
+    }
+    static addCount(bloglist, type) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let add_type = 'browse_count';
+            if (type == 'browse_count') {
+            }
+            else if (type == 'like') {
+                add_type = 'like';
+            }
+            let sql = `update bloglist set ${add_type} = ${add_type}+1 where id=${mysqlutil_1.default.escape(bloglist)}`;
+            if (process.env.debug) {
+                console.log(sql);
+            }
+            return yield global.asynConPool.queryAsync(sql);
         });
     }
 }

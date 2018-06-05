@@ -8,5 +8,7 @@ router.get('/webinfo', async(ctx)=>{
     ctx.body = await webinfoController.get_count();
 });
 
+export default router.middleware();
+
 
 

@@ -10,18 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const koa_router_1 = __importDefault(require("koa-router"));
-const bloglist_1 = __importDefault(require("../controller/bloglist"));
-const moment_1 = __importDefault(require("moment"));
+const zhihu_1 = __importDefault(require("../scrape_controller/zhihu"));
 const router = new koa_router_1.default();
-router.get('/bloglist/:page_num', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-    let { page_num, page_size } = ctx.params;
-    let { type, sort_type } = ctx.request.query;
-    let result = yield bloglist_1.default.getBlogList(page_num, page_size || 10, sort_type, type);
-    result.bloglist.map(data => {
-        data.pub_datetime = moment_1.default(data.pub_datetime).format('YYYY-MM-DD HH:mm:ss');
-        console.log(data.pub_datetime);
-    });
-    ctx.body = { code: 0, data: result };
+router.get('/zhihu', (ctx) => __awaiter(this, void 0, void 0, function* () {
+    ctx.body = yield zhihu_1.default.getByDate();
 }));
-module.exports = router.middleware();
+exports.default = router.middleware();

@@ -17,6 +17,9 @@ class Blog {
     static getBlog(id) {
         return __awaiter(this, void 0, void 0, function* () {
             let sql = `select * from blog where id =` + mysql_1.default.escape(id);
+            if (process.env.debug) {
+                console.log(sql);
+            }
             let result = yield mysqlutil_1.default.queryOne(sql);
             return result;
         });
@@ -29,6 +32,15 @@ class Blog {
                 console.log(sql);
             }
             return yield global.asynConnection.queryAsync(sql);
+        });
+    }
+    static getBlogByListId(bloglistid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let sql = `select * from blog where bloglistid=${mysql_1.default.escape(bloglistid)}`;
+            if (process.env.debug) {
+                console.log(sql);
+            }
+            return yield global.asynConPool.queryAsync(sql);
         });
     }
 }

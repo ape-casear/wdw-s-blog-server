@@ -13,10 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 const koa_router_1 = __importDefault(require("koa-router"));
 const comment_1 = __importDefault(require("../controller/comment"));
 const webinfo_1 = __importDefault(require("../controller/webinfo"));
+const moment_1 = __importDefault(require("moment"));
 const router = new koa_router_1.default();
 router.get('/comment/:bloglistid', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let { bloglistid } = ctx.params;
-    ctx.body = yield comment_1.default.getComment(bloglistid);
+    let result = yield comment_1.default.getComment(bloglistid);
+    result.map((data) => {
+        data.comment_datetime = moment_1.default(data.comment_datetime).format('YYYY-MM-DD HH:mm:ss');
+    });
+    ctx.body = { code: 0, data: result };
 }));
 router.post('/comment/addcomment', (ctx) => __awaiter(this, void 0, void 0, function* () {
     let { bloglistid, author, comment, parent } = ctx.request.body;

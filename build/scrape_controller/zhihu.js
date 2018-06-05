@@ -10,18 +10,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const koa_router_1 = __importDefault(require("koa-router"));
-const bloglist_1 = __importDefault(require("../controller/bloglist"));
+Object.defineProperty(exports, "__esModule", { value: true });
+const mysql_1 = __importDefault(require("mysql"));
 const moment_1 = __importDefault(require("moment"));
-const router = new koa_router_1.default();
-router.get('/bloglist/:page_num', (ctx, next) => __awaiter(this, void 0, void 0, function* () {
-    let { page_num, page_size } = ctx.params;
-    let { type, sort_type } = ctx.request.query;
-    let result = yield bloglist_1.default.getBlogList(page_num, page_size || 10, sort_type, type);
-    result.bloglist.map(data => {
-        data.pub_datetime = moment_1.default(data.pub_datetime).format('YYYY-MM-DD HH:mm:ss');
-        console.log(data.pub_datetime);
-    });
-    ctx.body = { code: 0, data: result };
-}));
-module.exports = router.middleware();
+class zhihu {
+    static getByDate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let start = moment_1.default().format('YYYY-MM-DD') + ' 00:00:00';
+            let end = moment_1.default().format('YYYY-MM-DD') + ' 23:59:59';
+            let sql = `select * from zhihu where created_time >=${mysql_1.default.escape(start)} and created_time<=${mysql_1.default.escape(end)}`;
+            if (process.env.debug) {
+                console.log(sql);
+            }
+            let result = yield global.asynConPool.queryAsync(sql);
+            return result;
+        });
+    }
+}
+exports.default = zhihu;

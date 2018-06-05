@@ -12,15 +12,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const koa_router_1 = __importDefault(require("koa-router"));
-const fileUpload_1 = __importDefault(require("../lib/fileUpload"));
+const request_1 = __importDefault(require("request"));
 const router = new koa_router_1.default();
-router.put('/img', (ctx) => __awaiter(this, void 0, void 0, function* () {
-    let { imgs } = ctx.request.body.files;
-    let imgPair = [];
-    for (let img of imgs) {
-        let newpath = yield fileUpload_1.default.imgUpload(img);
-        imgPair.push({ name: img.name, newpath });
+const timeout = (ms) => new Promise(res => setTimeout(res, ms));
+function pipe(request, img, response) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => {
+            request.get(img, { headers: { referer: 'https://www.zhihu.com' } }).on('error', function (err) {
+                console.log(err);
+                rej(err);
+            }).on('end', () => {
+                res();
+            }).pipe(response);
+        });
+    });
+}
+router.get('/img/zhihu', (ctx) => __awaiter(this, void 0, void 0, function* () {
+    let { img } = ctx.query;
+    ctx.status = 200;
+    if (img.startsWith('//')) {
+        img = 'https:' + img;
     }
-    ctx.body = { msg: 'ok', data: imgPair };
+    yield pipe(request_1.default, img, ctx.res);
 }));
 exports.default = router.middleware();

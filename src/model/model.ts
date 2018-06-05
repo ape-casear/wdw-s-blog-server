@@ -9,10 +9,10 @@ export interface BlogList{
     id: number;
     title: string;
     author: string;
-    pub_date: string;
     like: number;
     browse_count: number;
     type: string;
+    pub_datetime: string;
 }
 //{id:1, user: '独孤求败', comment: '丢你老谋', comment_datatime: '2018-05-09 12:32:11', floor: 1, sub_comment: 
 export interface Comment{
@@ -20,7 +20,7 @@ export interface Comment{
     bloglistid: number;
     author: string;
     comment: string;
-    comment_datatime: string;
+    comment_datetime: string;
     parent: number;
 }
 export interface User{
@@ -53,5 +53,13 @@ export interface graphics_card{
 export interface WebInfo{
     visit_count: number;
     total_comment: number;
+}
+
+export interface zhihu_comment{
+    id: number;
+    name: string;
+    content: string;
+    like: number;
+    zhihu: number;
 }
 

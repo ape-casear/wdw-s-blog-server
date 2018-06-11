@@ -13,7 +13,7 @@ export default {
             var stream = read.pipe(write);
 
             stream.on('finish', function () {
-                resolve(`http://www.weidongwei.com:${process.env.PORT}/public/img/${date}_${file.name}`);
+                resolve(`http://www.weidongwei.com:${process.env.PORT}/img/${date}_${file.name}`);
             });
         })
         return await pub;

@@ -20,12 +20,16 @@ router.get('/blog', async(ctx)=>{
     bloglistController.addCount( bloglistid );
     ctx.body = { code:0, data: result[0]};
 })
-
+router.post('/blog/modify', async(ctx)=>{
+    let { bloglistid, content } = ctx.request.body;
+    let res = await blogController.modify(bloglistid, content);
+    ctx.body = { code: 0, res };
+})
 router.post('/blog', async(ctx)=>{
     
     let { blog } = ctx.request.body.files;
     let { title, author, type } = ctx.request.body.fields;
-    let data = fs.readFileSync(ctx.request.body.files.blog.path)
+    let data = fs.readFileSync(blog.path)
     
     
     console.log(data.toString())

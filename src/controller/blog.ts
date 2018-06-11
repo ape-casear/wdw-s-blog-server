@@ -24,6 +24,11 @@ class Blog{
         return await global.asynConPool.queryAsync(sql)
 
     }
+    static async modify( bloglistid: number, content: string){
+        let sql = `update blog set blog = ${mysql.escape(content)} where bloglistid = ${mysql.escape(bloglistid)}`;
+        if(process.env.debug){console.log(sql)}
+        return await  global.asynConPool.queryAsync(sql);
+    }
 
 }
 export default Blog;

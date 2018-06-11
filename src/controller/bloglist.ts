@@ -38,7 +38,7 @@ class BlogList{
 
     static async insertbloginfo(bloglist: any){
         let sql = `insert into bloglist(title,author,tag) values(${mysql.escape(bloglist.title)},
-        ${mysql.escape(bloglist.author)},${mysql.escape(bloglist.tag)})`;
+        ${mysql.escape(bloglist.author)},${mysql.escape(bloglist.type)})`;
         if(process.env.debug){console.log(sql)}
 
         return await global.asynConnection.queryAsync(sql)

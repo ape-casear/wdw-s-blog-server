@@ -1,16 +1,16 @@
 'use strict';
 
-const Koa      = require('koa');            // Koa framework
-const body     = require('koa-body');       // body parser
-const handlebars = require('koa-handlebars'); // handlebars templating
+const Koa      = require('koa');                // Koa framework
+const body     = require('koa-body');           // body parser
+const handlebars = require('koa-handlebars');   // handlebars templating
 const session  = require('koa-session');  
-const flash      = require('koa-flash');      // flash messages
-const serve      = require('koa-static');     // static file serving middleware
-const debug    = require('debug')('app');   // small debugging utility
-const koaRoute = require('koa-router');     // router middleware for koa
+const flash      = require('koa-flash');        // flash messages
+const serve      = require('koa-static');       // static file serving middleware
+const debug    = require('debug')('app');       // small debugging utility
+const koaRoute = require('koa-router');         // router middleware for koa
 const MongoClient = require('mongodb').MongoClient;
-const cors = require('@koa/cors');           //for XHR request
-
+const cors = require('@koa/cors');              // for XHR request
+const jwt = require('koa-jwt');                 // for jwt auth
 //const router = koaRouter();
 const router = require('./build/router/router.js');
 const bloglist = require('./build/router/bloglist.js');
@@ -67,7 +67,7 @@ app.use(async function handleErrors(ctx, next) {
         if (app.env == 'production') delete err.stack; // don't leak sensitive info!
         switch (ctx.status) {
             case 401: // Unauthorised (eg invalid JWT auth token)
-                ctx.redirect('/login'+ctx.url);
+                ctx.body = 'Protected resource, use Authorization header to get access\n';
                 break;
             case 404: // Not Found
                 if (err.message == 'Not Found') err.message = null; // personalised 404
@@ -94,6 +94,10 @@ app.use(async function cleanPost(ctx, next) {
         if(ctx.request.body.files){
             console.log(ctx.request.body.files)
         }
+        if(typeof ctx.request.body == 'string'){
+            ctx.request.body = JSON.parse(ctx.request.body)
+        }
+        console.log('typeof ctx.request.body:',typeof ctx.request.body)
         const multipart = 'fields' in ctx.request.body && 'files' in ctx.request.body;
         const body =  multipart ? ctx.request.body.fields : ctx.request.body;
         
@@ -130,7 +134,7 @@ app.use(async (ctx,next)=>{
 })
 
 //console.log(router)
-
+app.use(jwt({ secret: 'wdwblog', cookie: 'ACCESS_TOEKN', passthrough: true }));
 app.use(router)
 //app.use(bloglist)
 

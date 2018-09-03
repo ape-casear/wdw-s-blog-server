@@ -1,7 +1,7 @@
 import koaRouter from 'koa-router';
 import userController from '../controller/user';
 import crypto from 'crypto';
-
+const jsonwebtoken = require("jsonwebtoken");
 const router = new koaRouter();
 
 router.get('/user/:id',async (ctx)=>{
@@ -22,6 +22,9 @@ router.post('/user/login', async(ctx)=>{
         result[0].password = '';
         result[0].telephone = '';
         ctx.body =  {code:0, data: result[0]};
+        let token = jsonwebtoken.sign({uid: result[0].id, username: author }, 'wdwblog', {expiresIn: '30 days' })
+        console.log(token)
+        ctx.cookies.set('ACCESS_TOKEN', token)
         return;
     }
 
@@ -38,11 +41,14 @@ router.post('/user',async (ctx)=>{
     const hash = crypto.createHash('sha256');
     password = hash.update(password+'wdwblog').digest('hex');
 
-    let result = await userController.putUser({id:0, author, password, telephone, create_time:'', snake_score:0, mine_score:0});
+    let result = await userController.putUser({id:0, author, password, telephone : telephone || 11111111111, create_time:'', snake_score:0, mine_score:0});
+    let token = jsonwebtoken.sign({uid: result.insertId, username: author }, 'wdwblog', {expiresIn: '30 days' })
+    console.log(token)
+    ctx.cookies.set('ACCESS_TOKEN', token)
     ctx.body = {code:0, msg:result}
 })
-router.get('/user/checkname/:author', async(ctx)=>{
-    let { author } = ctx.params;
+router.post('/user/checkname', async(ctx)=>{
+    let { author } = ctx.request.body;
     let user = await userController.getUserByName(author);
     if(user[0] && user[0].id){
         ctx.body = {code:400, msg:'用户名已存在'}

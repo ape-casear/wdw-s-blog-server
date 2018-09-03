@@ -36,6 +36,7 @@
     "koa-router": "^7.0.1",
     "koa-session": "^5.8.1",
     "koa-static": "^4.0.2",
+    "koa-jwt": "^3.5.0",
     "markdown-it": "^8.3.0",
     "mongodb": "^3.0.5",
     "mysql2": "^1.2.0",

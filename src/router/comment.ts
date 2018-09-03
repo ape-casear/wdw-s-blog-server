@@ -19,7 +19,7 @@ router.post('/comment/addcomment',async (ctx)=>{
     let { bloglistid, author, comment, parent } = ctx.request.body;
     webinfoController.update_count('comment');
     
-    ctx.body = await commentController.addComment({id:0, bloglistid, author, comment, parent ,comment_datatime:''});
+    ctx.body = await commentController.addComment({id:0, bloglistid, author, comment, parent ,comment_datetime:''});
 })
 
 export = router.middleware();

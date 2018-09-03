@@ -55,6 +55,11 @@ class BlogList{
         if(process.env.debug){console.log(sql)}
         return await global.asynConPool.queryAsync(sql)
     }
+    static async getBlogTypeCount(){
+        let sql = `select tag,count(1) as count from bloglist group by tag`;
+        if(process.env.debug){console.log(sql)}
+        return await global.asynConPool.queryAsync(sql)
+    }
 }
 
 

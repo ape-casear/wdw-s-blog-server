@@ -16,6 +16,13 @@ class Comment{
         
         return await  global.asynConPool.queryAsync(sql);
     }
+
+    /* 最新评论 */
+    static async getLatestCom(){
+        let sql = `select * from comments order by comment_datetime desc limit 5`;
+        if(process.env.debug){console.log(sql)}
+        return await  global.asynConPool.queryAsync(sql);
+    }
 }
 
 

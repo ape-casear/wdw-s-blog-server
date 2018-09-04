@@ -18,7 +18,8 @@ class BlogList{
             }
         }
  
-        let sql1 = `select * from bloglist ${tagcondition} ${sort} limit ${page_num*page_size},${page_size}`;
+        let sql1 = `select * from bloglist b left join (select bloglistid,count(bloglistid) as comments from comments group by bloglistid) c 
+            on b.id=c.bloglistid ${tagcondition} ${sort} limit ${page_num*page_size},${page_size}`;
         let bloglist = (await global.asynConPool.queryAsync(sql1)) as Array<model.BlogList>;
         let sql2 = `select count(1) as total_page from bloglist`;
         if(process.env.debug){console.log(sql1+';'+sql2)}

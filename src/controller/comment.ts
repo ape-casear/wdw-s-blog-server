@@ -7,6 +7,7 @@ class Comment{
         if(process.env.debug){console.log(sql)}
         return await  global.asynConPool.queryAsync(sql);
     }   
+    /* 写评论 */
     static async addComment(comment: model.Comment){
         comment = mysqlutil.escapeAll(comment);
         let sql = `insert into comments(bloglistid,author,comment,parent)
@@ -20,6 +21,12 @@ class Comment{
     /* 最新评论 */
     static async getLatestCom(){
         let sql = `select * from comments order by comment_datetime desc limit 5`;
+        if(process.env.debug){console.log(sql)}
+        return await  global.asynConPool.queryAsync(sql);
+    }
+    /* 得到指定id评论 */ 
+    static async getComById(id: number){
+        let sql = `select * from comments where id=${mysqlutil.escape(id)}`;
         if(process.env.debug){console.log(sql)}
         return await  global.asynConPool.queryAsync(sql);
     }

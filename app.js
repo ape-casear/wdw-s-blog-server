@@ -29,11 +29,12 @@ const app = new Koa();
 
 app.use(cors({
     origin :function(ctx){
-        let ip = ctx.request.ip;
-        console.log(ip)
-        return '*';
+        let origin = ctx.headers.origin;
+        console.log('*** headers ***',ctx.headers)
+        console.log('*** cookie ***',ctx.cookies.get('wdw'))
+        return origin||'*';
     },
-    allowHeaders: ["Authorization","Origin", "X-Requested-With", "Content-Type", "Accept", "Referer", "User-Agent"],
+    allowHeaders: ["Authorization","Origin", "X-Requested-With", "Content-Type", "Accept", "Referer", "User-Agent", "Cookie"],
     credentials: true,
     keepHeadersOnError: true
 }));
@@ -97,7 +98,8 @@ app.use(async function cleanPost(ctx, next) {
         if(typeof ctx.request.body == 'string'){
             ctx.request.body = JSON.parse(ctx.request.body)
         }
-        console.log('typeof ctx.request.body:',typeof ctx.request.body)
+        console.log('typeof ctx.request.body:', typeof ctx.request.body)
+        console.log('request.body:', ctx.request.body)
         const multipart = 'fields' in ctx.request.body && 'files' in ctx.request.body;
         const body =  multipart ? ctx.request.body.fields : ctx.request.body;
         
@@ -134,7 +136,7 @@ app.use(async (ctx,next)=>{
 })
 
 //console.log(router)
-app.use(jwt({ secret: 'wdwblog', cookie: 'ACCESS_TOEKN', passthrough: true }));
+app.use(jwt({ secret: 'wdwblog', cookie: 'ACCESS_TOKEN', passthrough: true }));
 app.use(router)
 //app.use(bloglist)
 

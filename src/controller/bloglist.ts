@@ -23,11 +23,11 @@ class BlogList{
         let bloglist = (await global.asynConPool.queryAsync(sql1)) as Array<model.BlogList>;
         let sql2 = `select count(1) as total_page from bloglist`;
         if(process.env.debug){console.log(sql1+';'+sql2)}
-        let total_page = await  mysqlutil.query(sql2)
+        let total_page:any = await  mysqlutil.query(sql2)
 
       
     
-        return {bloglist,total_page};
+        return {bloglist,total_page: total_page[0].total_page};
         
     }
 

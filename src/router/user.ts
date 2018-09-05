@@ -18,17 +18,16 @@ router.post('/user/login', async(ctx)=>{
     password = hash.update(password+'wdwblog').digest('hex');
 
     let result = await userController.login(author, password);
+    console.log('---> login')
     if(result instanceof Array && result[0] && result[0].id){
-        result[0].password = '';
-        result[0].telephone = '';
-        ctx.body =  {code:0, data: result[0]};
         let token = jsonwebtoken.sign({uid: result[0].id, username: author }, 'wdwblog', {expiresIn: '30 days' })
-        console.log(token)
-        ctx.cookies.set('ACCESS_TOKEN', token)
-        return;
+        
+        ctx.cookies.set('ACCESS_TOKEN', token, {maxAge: 1000*3600*24*30})
+        console.log('---> login success')
+        ctx.body =  {code:0, data:{token}};
+    }else{
+        ctx.body =  {code:500,msg:'账号或密码错误'}
     }
-
-    ctx.body =  {code:500,msg:'账号或密码错误'}
 })
 router.post('/user',async (ctx)=>{
     let { author, password, telephone} = ctx.request.body;

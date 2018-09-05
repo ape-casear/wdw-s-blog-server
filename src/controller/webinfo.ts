@@ -17,8 +17,9 @@ class WebInfo{
         }else if(type === 'blog'){
             web_info_data.blog_count += 1;
         }
-        let result = await web_info_client.update({"name":"web_info"},{"name":"web_info","visit_count":web_info_data.visit_count,
-        "total_comment":web_info_data.total_comment, "blog_count": web_info_data.blog_count});
+        let doc = {"name":"web_info","visit_count":web_info_data.visit_count,
+        "total_comment":web_info_data.total_comment, "blog_count": web_info_data.blog_count}
+        let result = await web_info_client.updateOne({"name":"web_info"},{$set: doc});
         return result;
 
     }

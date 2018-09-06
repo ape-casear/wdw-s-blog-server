@@ -44,7 +44,7 @@ router.post('/user',async (ctx)=>{
     let token = jsonwebtoken.sign({uid: result.insertId, username: author }, 'wdwblog', {expiresIn: '30 days' })
     console.log(token)
     ctx.cookies.set('ACCESS_TOKEN', token)
-    ctx.body = {code:0, msg:result}
+    ctx.body = {code:0, data:{token}}
 })
 router.post('/user/checkname', async(ctx)=>{
     let { author } = ctx.request.body;

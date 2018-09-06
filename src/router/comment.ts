@@ -21,9 +21,9 @@ router.post('/comment/addcomment',async (ctx)=>{
         ctx.body = { code: 401, error: '用户未登录'};
         return;
     }
-    let { bloglistid, comment, parent } = ctx.request.body;
+    let { bloglistid, author, comment, parent } = ctx.request.body;
     webinfoController.update_count('comment');
-    let username = ctx.state.user.username;
+    let username = author || ctx.state.user.username;
     let res = await commentController.addComment({id:0, bloglistid, author: username, comment, parent ,comment_datetime:''});
     let data = await commentController.getComById(res.insertId)
     data[0].comment_datetime = moment(data[0].comment_datetime).format('YYYY-MM-DD HH:mm:ss')

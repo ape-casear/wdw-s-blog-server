@@ -3,7 +3,7 @@ import * as model from '../model/model';
 
 class Comment{
     static async getComment(bloglistid: number){
-        let sql = `select * from comments where bloglistid=${mysqlutil.escape(bloglistid)}`;
+        let sql = `select c.*,u.avatar as avatar from comments c inner join user u on c.author = u.author where c.bloglistid=${mysqlutil.escape(bloglistid)}`;
         if(process.env.debug){console.log(sql)}
         return await  global.asynConPool.queryAsync(sql);
     }   
@@ -20,13 +20,13 @@ class Comment{
 
     /* 最新评论 */
     static async getLatestCom(){
-        let sql = `select * from comments order by comment_datetime desc limit 5`;
+        let sql = `select c.*,u.avatar as avatar from comments c inner join user u on c.author = u.author order by c.comment_datetime desc limit 5`;
         if(process.env.debug){console.log(sql)}
         return await  global.asynConPool.queryAsync(sql);
     }
     /* 得到指定id评论 */ 
     static async getComById(id: number){
-        let sql = `select * from comments where id=${mysqlutil.escape(id)}`;
+        let sql = `select c.*,u.avatar as avatar from comments c inner join user u on c.author = u.author where c.id=${mysqlutil.escape(id)}`;
         if(process.env.debug){console.log(sql)}
         return await  global.asynConPool.queryAsync(sql);
     }

@@ -17,12 +17,10 @@
 
 <main>
 
-{{#if user}}
 
 <p>You are currently logged in as {{user.Firstname}} {{user.Lastname}}
     (with {{user.Role}} privileges).</p>
 
-{{else}}
 
 <form method="post" enctype="multipart/form-data">
     <ul>
@@ -64,7 +62,7 @@
     <li><i>admin@user.com/admin</i> for full access</li>
 </ul>
 
-{{/if}}
+
 
 </main>
 

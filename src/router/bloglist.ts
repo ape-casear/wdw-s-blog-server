@@ -14,6 +14,9 @@ router.get('/bloglist/:page_num',async(ctx,next)=>{
     })
     ctx.body = {code:0, data: result};
 })
-
+router.get('/bloglist-category', async(ctx,next)=>{
+    let res = await blogListController.getBlogTypeCount()
+    ctx.body = { code:0, data: res}
+})
 
 export = router.middleware();

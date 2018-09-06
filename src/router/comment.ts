@@ -17,11 +17,11 @@ router.get('/comment/:bloglistid',async (ctx)=>{
 })
 
 router.post('/comment/addcomment',async (ctx)=>{
-    if(!ctx.state.user){
+    let { bloglistid, author, comment, parent } = ctx.request.body;
+    if(!ctx.state.user && !author){
         ctx.body = { code: 401, error: '用户未登录'};
         return;
     }
-    let { bloglistid, author, comment, parent } = ctx.request.body;
     webinfoController.update_count('comment');
     let username = author || ctx.state.user.username;
     let res = await commentController.addComment({id:0, bloglistid, author: username, comment, parent ,comment_datetime:''});

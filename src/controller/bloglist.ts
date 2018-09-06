@@ -8,7 +8,11 @@ class BlogList{
         let sort = ' order by `pub_datetime` desc ';
         let tagcondition = '';
         if(tag){
-            tagcondition += ' where tag='+mysqlutil.escape(tag);
+            if(tag == 'unclassify'){
+                tagcondition += ' where tag is null'
+            }else{
+                tagcondition += ' where tag='+mysqlutil.escape(tag);
+            }
         }
         if(sort_type){
             if(sort_type === 'like'){

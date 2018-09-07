@@ -25,20 +25,23 @@ class User{
 
         return await  global.asynConPool.queryAsync(sql);
     }
-    static async updateUser(user: model.User){
-        let snake, mine_score;
-        if(user.snake_score){
-            snake = 'snake_score = '+user.snake_score;
+    static async updateUser(options: any, author: string){
+        let set_str = 'set ';
+        let setArr = [];
+        for(let key in options){
+            if(typeof options[key] === 'string'){
+                setArr.push( `\`${key}\`=${mysqlutil.escape(options[key])}`)
+            }else{
+                setArr.push( `\`${key}\`=${options[key]}`)
+            }
         }
-        if(user.mine_score){
-            mine_score = 'mine_score = '+user.mine_score;
-        }
-        
-        let sql = `update user set`+ snake?snake:'' + mine_score?mine_score:'' +'where id='+mysqlutil.escape(user.id) ;
-         if(process.env.debug){console.log(sql)}
+        set_str = set_str + setArr.join(',')
+        let sql = `update user ${set_str} where author=${mysqlutil.escape(author)}`
+        if(process.env.debug){console.log(sql)}
 
         return await  global.asynConPool.queryAsync(sql);
     }
+
 }
 
 export default User;

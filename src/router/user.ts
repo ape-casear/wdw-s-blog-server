@@ -1,15 +1,20 @@
 import koaRouter from 'koa-router';
 import userController from '../controller/user';
 import crypto from 'crypto';
+
+import fileUpload from '../lib/fileUpload';
 const jsonwebtoken = require("jsonwebtoken");
 const router = new koaRouter();
 
-router.get('/user/:id',async (ctx)=>{
-    let { id } = ctx.params; 
-
-    let result = await userController.getUser(id);
-    
-    ctx.body = {coed:0, data: result[0]};
+router.get('/user/:username',async (ctx)=>{
+    let { username } = ctx.params; 
+    let self = false;
+    if(ctx.state.user && ctx.state.user.username == username ){
+        self = true;
+    }
+    let result = await userController.getUserByName(username);
+    let { author, avatar, describe } = result[0]
+    ctx.body = {coed:0, data: { author, avatar, describe, self }};
 })
 
 router.post('/user/login', async(ctx)=>{
@@ -57,14 +62,27 @@ router.post('/user/checkname', async(ctx)=>{
 
 })
 router.post('/user/update', async (ctx)=>{
-    let { snake_score, mine_score, id} = ctx.request.body;
-    let address = ctx.request.ip;
-    if(address!=='::1'){
-        ctx.body = {code:400, msg:'嘿，小伙，想干啥呢！'}
+   
+    ctx.body = {code:0, msg: '此接口没用'}
+
+})
+router.post('/user/update-profile', async (ctx)=>{
+    let { avatar, describe, name } = ctx.request.body;
+    let author = ctx.state.user&&ctx.state.user.username;
+    if(!author){
+        ctx.body = {code: 401, message: '未登录'}
         return;
     }
-    let result = await userController.updateUser({id, author:'', password:'', telephone:0, create_time:'', snake_score, mine_score});
-    ctx.body = {code:0, msg:result}
+    let result;
+    if( !avatar || !name){
+        result = await userController.updateUser({describe}, author)
+    }else{
+        avatar = await fileUpload.base64ImgUpLoad(avatar, author, name)
+        result = await userController.updateUser({avatar, describe}, author)
+    }
+    ctx.body = { code: 0, message: 'update ok', data: 
+        { avatar, describe, author, self: true}
+    }
 
 })
 

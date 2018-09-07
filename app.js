@@ -53,7 +53,7 @@ app.use(handlebars({
     helpers:     { selected: HandlebarsHelpers.selected, checked: HandlebarsHelpers.checked },
 }));
 // parse request body into ctx.request.body
-app.use(body({ multipart: true }))
+app.use(body({ multipart: true , formLimit: '2mb', textLimit: '2mb' }))
 // set signed cookie keys for JWT cookie & session cookie
 app.keys = [ 'aaa-koa-sample-app' ];
 

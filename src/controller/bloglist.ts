@@ -4,14 +4,15 @@ import mysqlutil from '../model/mysqlutil';
 
 
 class BlogList{
-    static async  getBlogList(page_num: number, page_size: number, sort_type?: string, tag?: string){
+    static async  getBlogList(page_num: number, page_size: number,  type = 1, sort_type?: string, tag?: string){
         let sort = ' order by `pub_datetime` desc ';
-        let tagcondition = '';
+        let tagcondition = 'where `type`='+ type;
+
         if(tag){
             if(tag == 'unclassify'){
-                tagcondition += ' where tag is null'
+                tagcondition += ' and tag is null'
             }else{
-                tagcondition += ' where tag='+mysqlutil.escape(tag);
+                tagcondition += ' and tag='+mysqlutil.escape(tag);
             }
         }
         if(sort_type){
@@ -29,21 +30,19 @@ class BlogList{
         if(process.env.debug){console.log(sql1+';'+sql2)}
         let total_page:any = await  mysqlutil.query(sql2)
 
-      
-    
         return {bloglist,total_page: total_page[0].total_page};
         
     }
 
     static async getbloginfo(id: number){
-        let sql = 'select * from bloglist where id='+mysql.escape(id);
+        let sql = 'select * from bloglist where `type`=1 and id='+mysql.escape(id);
         if(process.env.debug){console.log(sql)}
         return await mysqlutil.queryOne(sql);
     }
 
     static async insertbloginfo(bloglist: any){
-        let sql = `insert into bloglist(title,author,tag) values(${mysql.escape(bloglist.title)},
-        ${mysql.escape(bloglist.author)},${mysql.escape(bloglist.type)})`;
+        let sql = `insert into bloglist(title,author,tag, img_url, type) values(${mysql.escape(bloglist.title)},
+        ${mysql.escape(bloglist.author)}, ${mysql.escape(bloglist.type)}, ${mysql.escape(bloglist.img_url)},${bloglist.type2})`;
         if(process.env.debug){console.log(sql)}
 
         return await global.asynConnection.queryAsync(sql)
@@ -61,7 +60,7 @@ class BlogList{
         return await global.asynConPool.queryAsync(sql)
     }
     static async getBlogTypeCount(){
-        let sql = `select tag,count(1) as count from bloglist group by tag`;
+        let sql = `select tag,count(1) as count from bloglist where \`type\`=1 group by tag`;
         if(process.env.debug){console.log(sql)}
         return await global.asynConPool.queryAsync(sql)
     }

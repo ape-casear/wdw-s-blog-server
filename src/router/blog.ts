@@ -28,14 +28,14 @@ router.post('/blog/modify', async(ctx)=>{
 router.post('/blog', async(ctx)=>{
     
     let { blog } = ctx.request.body.files;
-    let { title, author, type } = ctx.request.body.fields;
+    let { title, author, type, img_url, type2 } = ctx.request.body.fields;
     let data = fs.readFileSync(blog.path)
     
     
     console.log(data.toString())
     try{
         await global.asynConnection.beginTransactionAsync();
-        let result2 = await bloglistController.insertbloginfo({ title, author, type });
+        let result2 = await bloglistController.insertbloginfo({ title, author, type, img_url:img_url||'', type2});
         console.log(result2)
         
         let result1 = await blogController.insertBlog({id: 0, bloglistid: result2.insertId, blog: data.toString()});

@@ -4,7 +4,7 @@ import bloglistController from '../controller/bloglist';
 import webinfoController from '../controller/webinfo';
 import * as model from '../model/model';
 import fs from 'fs';
-
+import fileUpload from '../lib/fileUpload';
 const router = new koaRouter();
 //根据id获取blog
 router.get('/blog/:id',async(ctx)=>{
@@ -27,15 +27,15 @@ router.post('/blog/modify', async(ctx)=>{
 })
 router.post('/blog', async(ctx)=>{
     
-    let { blog } = ctx.request.body.files;
-    let { title, author, type, img_url, type2 } = ctx.request.body.fields;
+    let { blog, img_url } = ctx.request.body.files;
+    let { title, author, type, type2 } = ctx.request.body.fields;
     let data = fs.readFileSync(blog.path)
-    
+    let newpath = await fileUpload.imgUpload(img_url);
     
     console.log(data.toString())
     try{
         await global.asynConnection.beginTransactionAsync();
-        let result2 = await bloglistController.insertbloginfo({ title, author, type, img_url:img_url||'', type2});
+        let result2 = await bloglistController.insertbloginfo({ title, author, type, img_url: newpath||'', type2});
         console.log(result2)
         
         let result1 = await blogController.insertBlog({id: 0, bloglistid: result2.insertId, blog: data.toString()});

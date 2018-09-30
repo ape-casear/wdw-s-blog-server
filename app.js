@@ -1,16 +1,18 @@
 'use strict';
 
-const Koa      = require('koa');                // Koa framework
-const body     = require('koa-body');           // body parser
-const handlebars = require('koa-handlebars');   // handlebars templating
-const session  = require('koa-session');  
-const flash      = require('koa-flash');        // flash messages
-const serve      = require('koa-static');       // static file serving middleware
-const debug    = require('debug')('app');       // small debugging utility
-const koaRoute = require('koa-router');         // router middleware for koa
-const MongoClient = require('mongodb').MongoClient;
-const cors = require('@koa/cors');              // for XHR request
-const jwt = require('koa-jwt');                 // for jwt auth
+const Koa           = require('koa');                // Koa framework
+const body          = require('koa-body');           // body parser
+const handlebars    = require('koa-handlebars');   // handlebars templating
+const session       = require('koa-session');  
+const flash         = require('koa-flash');        // flash messages
+const serve         = require('koa-static');       // static file serving middleware
+const conditional   = require('koa-conditional-get');
+const etag          = require('koa-etag')
+const debug         = require('debug')('app');       // small debugging utility
+const koaRoute      = require('koa-router');         // router middleware for koa
+const MongoClient   = require('mongodb').MongoClient;
+const cors          = require('@koa/cors');              // for XHR request
+const jwt           = require('koa-jwt');                 // for jwt auth
 //const router = koaRouter();
 const router = require('./build/router/router.js');
 const bloglist = require('./build/router/bloglist.js');
@@ -38,6 +40,8 @@ app.use(cors({
     credentials: true,
     keepHeadersOnError: true
 }));
+app.use(conditional());
+app.use(etag());
 app.use(serve('public'));
 app.use(async function responseTime(ctx, next) {
     const t1 = Date.now();
